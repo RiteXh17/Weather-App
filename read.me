@@ -1,0 +1,98 @@
+FULL CODE EXPLANATION 
+
+
+
+
+Is Code Ka Breakdown Aur Explanation:
+Yeh code OpenWeather API se weather information ko fetch karta hai aur user input ke basis par display karta hai. Chalo ek-ek part ko detail mein samajhte hain.
+
+Code Ka Step-by-Step Breakdown:
+1. Global Variables and Selectors
+javascript
+Copy code
+const apiKey = "aee48b65098ebe742144c48250c1805d";
+const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+const searchBox = document.querySelector(".search input");
+const searchBtn = document.querySelector(".search button");
+const icon = document.querySelector(".weather-icon");
+apiKey: Yeh API key hai jo OpenWeather API ke access ke liye zaroori hai.
+apiUrl: Yeh API endpoint hai jo weather data fetch karta hai. units=metric ensure karta hai ki temperature Celsius mein aaye.
+searchBox aur searchBtn: Yeh DOM elements hain jo user ke input aur button ke events ko handle karenge.
+icon: Yeh element weather icon ke source ko update karega, jaise cloud, rain, etc.
+2. Asynchronous Function Definition:
+javascript
+Copy code
+async function checkWeather(city) {
+    const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+async keyword: Is function ko asynchronous banata hai, matlab yeh non-blocking tarike se kaam karega. Iska fayda yeh hai ki API request ke complete hone tak JavaScript code ko "freeze" nahi karega.
+
+await fetch: Yeh request API URL + city ko send karta hai aur jab tak data nahi aata, tab tak response ko wait karta hai. await ensure karta hai ki API se response milne ke baad hi agla code chale.
+
+3. Error Handling with API Response:
+javascript
+Copy code
+    if (!response.ok) {
+        document.querySelector(".error").style.display = "block";
+        document.querySelector(".weather").style.display = "none";
+    } else {
+        var data = await response.json();
+!response.ok: Agar response invalid hai (e.g., 404 Not Found), toh error message show hoga aur weather section ko hide kar diya jayega.
+
+response.json(): Agar response sahi hai, toh data ko JSON format mein parse karenge.
+
+4. DOM Manipulation for Weather Data:
+javascript
+Copy code
+        document.querySelector(".city").innerHTML = data.name;
+        document.querySelector(".temp").innerHTML = Math.round(data.main.temp) + "°c";
+        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.wind.speed + "km/h";
+City name, temperature, humidity, and wind speed: Yeh data directly API ke response se liya gaya hai aur DOM elements mein insert kiya ja raha hai.
+5. Icon Update Based on Weather Condition:
+javascript
+Copy code
+        if (data.weather[0].main == 'Clouds') {
+            icon.src = "images/clouds.png";
+        } else if (data.weather[0].main == 'Clear') {
+            icon.src = "images/clear.png";
+        } else if (data.weather[0].main == 'Rain') {
+            icon.src = "images/rain.png";
+        } else if (data.weather[0].main == 'Drizzle') {
+            icon.src = "images/drizzle.png";
+        } else if (data.weather[0].main == 'Mist') {
+            icon.src = "images/mist.png";
+        }
+Weather condition check: Yeh code check karta hai ki weather ka type kya hai, aur uske hisaab se relevant image icon set karta hai.
+6. Display Handling:
+javascript
+Copy code
+        document.querySelector(".weather").style.display = "block";
+        document.querySelector(".error").style.display = "none";
+    }
+}
+Agar data sahi mil gaya, toh weather section ko show karenge aur error message ko hide karenge.
+7. Event Listener for Search Button:
+javascript
+Copy code
+searchBtn.addEventListener('click', () => {
+    const city = searchBox.value.trim();  
+    if (city) {
+        checkWeather(city);  
+    } else {
+        alert("Please enter a city name.");
+    }
+});
+Button click event: Jab user button pe click karega, toh input value ko trim karke check karta hai. Agar city name nahi diya, toh ek alert message show karta hai.
+8. Initial Weather Check Call:
+javascript
+Copy code
+checkWeather();
+Yeh line default mein empty call kar rahi hai, lekin kuch nahi karegi kyunki koi city input nahi diya gaya. Agar user kuch input karega, tabhi relevant data fetch hoga.
+Asynchronous Function (async/await) Explanation:
+Async Function: Yeh ek non-blocking function hota hai jo promises ka use karta hai. Iska fayda yeh hai ki hum asaani se asynchronous code likh sakte hain bina .then() aur .catch() ke.
+await: Yeh keyword promise ko wait karta hai, matlab yeh ensure karta hai ki API se response milne tak function ruk jaye, aur phir agla step execute kare. Agar await ko nahi use karenge, toh code asaani se undefined errors de sakta hai kyunki API response abhi aaya nahi hoga.
+How This Code Works in Summary:
+User input karta hai city name aur button click karta hai.
+API request send hoti hai aur response ke basis par weather data show hota hai.
+Agar response valid nahi hota (404), toh error message show hota hai.
+Agar valid response milta hai, toh city ka weather aur relevant icon DOM mein insert ho jata hai.
